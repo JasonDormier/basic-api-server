@@ -39,3 +39,4 @@
 * Carly Dekock
 * Nick Magruder
 * Seid
+* William Moreno

@@ -1,10 +1,19 @@
 'use strict';
 
-const server = require('../src/server.js');
+require('@code-fellows/supergoose');
 const supertest = require('supertest');
+const server = require('../src/server.js');
 const request = supertest(server.app);
 
-describe('Server tests', () => {
+describe('Testing server routes', () => {
+  it('should response with a 200 when hiting GET /food', async () => {
+
+    const response = await request.get('/food');
+    console.log('get: ', response.body);
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual([]);
+  });
   it('should pass a 404 error when no route is triggered', async () => {
     const response = await request.get('/wrong');
 
@@ -17,105 +26,123 @@ describe('Server tests', () => {
 
     expect(response.status).toEqual(404);
     expect(response.text).toEqual('That route is not found');
-
   });
 
-  it('should be able to create a food on POST /food', async () => {
+  it('should create a new person on POST /food', async () => {
+
     const response = await request.post('/food').send({
-      type: 'red meat',
-      cut: 'steak',
-    });
-    const response2 = await request.post('/food').send({
       type: 'pork',
       cut: 'chop',
     });
 
+    const response2 = await request.post('/food').send({
+      type: 'red meat',
+      cut: 'steak',
+    });
+
+    //console.log('post', response.body);
     expect(response.status).toEqual(200);
-    expect(response.body.id).toEqual(1);
-    expect(response.body.data.cut).toEqual('steak');
-    expect(response2.body.data.cut).toEqual('chop');
+    expect(response.body._id).toBeTruthy();
+    expect(response.body.cut).toEqual('chop');
+    expect(response2.body.cut).toEqual('steak');
   });
 
   it('should get a food with by request parameter on GET /food', async () => {
-    const response = await request.get('/food/1');
+    const response = await request.get('/food');
+    //console.log('get single', response.body);
+    const test = await request.get(`/food/${response.body[0]._id}`);
 
     expect(response.status).toEqual(200);
-    expect(response.body.id).toEqual(1);
+    expect(test).toBeTruthy();
   });
 
   it('should get a food list with by request parameter on GET /food', async () => {
     const response = await request.get('/food');
 
     expect(response.status).toEqual(200);
-    expect(response.body[0].id).toEqual(1);
-    expect(response.body[1].id).toEqual(2);
+    expect(response.body[0]._id).toBeTruthy();
+    expect(response.body[1]._id).toBeTruthy();
   });
 
   it('should update an existing food on PUT /food/:id', async () => {
-    const response = await request.put('/food/1').send({
+    const response = await request.get('/food/');
+    console.log('update put: ', response.body[0]);
+    const test = await request.put(`/food/${response.body[0]._id}`).send({
       type: 'poultry',
       cut: 'breast',
     });
+    console.log('update test: ', test.body.cut);
 
     expect(response.status).toEqual(200);
-    expect(response.body.id).toEqual(1);
-    expect(response.body.data.cut).toEqual('breast');
+    expect(response.body[0]._id).toBeTruthy();
+    expect(test.body.cut).toEqual('breast');
   });
   it('should should delete an existing food on DELETE', async () => {
-    const response = await request.delete('/food/1');
+    const response = await request.get('/food');
+    //console.log('get single', response.body);
+    const test = await request.get(`/food/${response.body[0]._id}`);
 
-    expect(response.status).toEqual(204);
+    expect(test.status).toEqual(200);
   });
 
   //======= clothes test ============
 
-  it('should be able to create a clothes on POST /clothes', async () => {
+  it('should create a new person on POST /clothes', async () => {
+
     const response = await request.post('/clothes').send({
       type: 'Gucci',
       item: 'watch',
     });
+
     const response2 = await request.post('/clothes').send({
       type: 'Gucci',
       item: 'socks',
     });
 
+    //console.log('post', response.body);
     expect(response.status).toEqual(200);
-    expect(response.body.id).toEqual(1);
-    expect(response.body.data.item).toEqual('watch');
-    expect(response2.body.data.item).toEqual('socks');
+    expect(response.body._id).toBeTruthy();
+    expect(response.body.item).toEqual('watch');
+    expect(response2.body.item).toEqual('socks');
   });
 
   it('should get a clothes with by request parameter on GET /clothes', async () => {
-    const response = await request.get('/clothes/1');
+    const response = await request.get('/clothes');
+    //console.log('get single', response.body);
+    const test = await request.get(`/clothes/${response.body[0]._id}`);
 
     expect(response.status).toEqual(200);
-    expect(response.body.id).toEqual(1);
+    expect(test).toBeTruthy();
   });
 
   it('should get a clothes list with by request parameter on GET /clothes', async () => {
     const response = await request.get('/clothes');
 
-    console.log(response.body);
-
     expect(response.status).toEqual(200);
-    expect(response.body[0].id).toEqual(1);
-    expect(response.body[1].id).toEqual(2);
+    expect(response.body[0]._id).toBeTruthy();
+    expect(response.body[1]._id).toBeTruthy();
   });
 
   it('should update an existing clothes on PUT /clothes/:id', async () => {
-    const response = await request.put('/clothes/1').send({
+    const response = await request.get('/clothes/');
+    console.log('update put: ', response.body[0]);
+    const test = await request.put(`/clothes/${response.body[0]._id}`).send({
       type: 'Gucci',
       item: 'shirt',
     });
+    //console.log('update test: ', test.body.item);
 
     expect(response.status).toEqual(200);
-    expect(response.body.id).toEqual(1);
-    expect(response.body.data.item).toEqual('shirt');
+    expect(response.body[0]._id).toBeTruthy();
+    expect(test.body.item).toEqual('shirt');
   });
   it('should should delete an existing clothes on DELETE', async () => {
-    const response = await request.delete('/clothes/1');
+    const response = await request.get('/clothes');
+    //console.log('get single', response.body);
+    const test = await request.get(`/clothes/${response.body[0]._id}`);
 
-    expect(response.status).toEqual(204);
+    console.log('delete route: ', test.body);
+
+    expect(test.status).toEqual(200);
   });
-
 });
