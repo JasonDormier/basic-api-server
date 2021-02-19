@@ -21,7 +21,7 @@ router.delete('/food/:id', validator, removefood);
 // }
 
 async function getfoodById(req, res, next) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   let resObject = await food.read(id);
   res.json(resObject);
 }
@@ -33,16 +33,16 @@ async function createfood(req, res, next) {
 }
 
 async function updatefood(req, res, next) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const foodObject = req.body;
   const resObject = await food.update(id, foodObject);
   res.json(resObject);
 }
 
 async function removefood(req, res, next) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const resObject = await food.delete(id);
-  res.status(204).json(resObject);
+  res.status(200).json(resObject);
 }
 
 module.exports = router;

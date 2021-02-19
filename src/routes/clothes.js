@@ -10,40 +10,40 @@ const ClothesModel = require('../models/data-collection-class.js');
 const ClothesInterface = require('../models/clothes.js');
 const clothes = new ClothesInterface(ClothesModel.clothesExport);
 
-router.get('/clothes', getClothes);
+router.get('/clothes', getClothesById);
 router.get('/clothes/:id', validator, getClothesById);
 router.post('/clothes', createClothes);
 router.put('/clothes/:id', validator, updateClothes);
 router.delete('/clothes/:id', validator, removeClothes);
 
-function getClothes(req, res, next) {
-  let resObject = clothes.read();
+// function getClothes(req, res, next) {
+//   let resObject = clothes.read();
+//   res.json(resObject);
+// }
+
+async function getClothesById(req, res, next) {
+  const id = req.params.id;
+  let resObject = await clothes.read(id);
   res.json(resObject);
 }
 
-function getClothesById(req, res, next) {
-  const id = parseInt(req.params.id);
-  let resObject = clothes.read(id);
+async function createClothes(req, res, next) {
+  const foodObject = req.body;
+  const resObject = await clothes.create(foodObject);
   res.json(resObject);
 }
 
-function createClothes(req, res, next) {
-  const clothesObject = req.body;
-  let resObject = clothes.create(clothesObject);
+async function updateClothes(req, res, next) {
+  const id = req.params.id;
+  const foodObject = req.body;
+  const resObject = await clothes.update(id, foodObject);
   res.json(resObject);
 }
 
-function updateClothes(req, res, next) {
-  const id = parseInt(req.params.id);
-  const clothesObject = req.body;
-  let resObject = clothes.update(id, clothesObject);
-  res.json(resObject);
-}
-
-function removeClothes(req, res, next) {
-  const id = parseInt(req.params.id);
-  let resObject = clothes.delete(id);
-  res.status(204).json(resObject);
+async function removeClothes(req, res, next) {
+  const id = req.params.id;
+  const resObject = await clothes.delete(id);
+  res.status(200).json(resObject);
 }
 
 module.exports = router;
