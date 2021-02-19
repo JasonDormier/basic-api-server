@@ -5,8 +5,10 @@ const router = express.Router();
 
 const validator = require('../middleware/validator.js');
 
+
+const ClothesModel = require('../models/data-collection-class.js');
 const ClothesInterface = require('../models/clothes.js');
-const clothes = new ClothesInterface();
+const clothes = new ClothesInterface(ClothesModel.clothesExport);
 
 router.get('/clothes', getClothes);
 router.get('/clothes/:id', validator, getClothesById);
